@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="nl">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="atlas-csrf" content="{{ csrf }}"><title>ATLAS OS</title>
+<link rel="stylesheet" href="/static/style.css"><script src="/static/app.js" defer></script></head>
+<body>
+<aside><a class="brand" href="/">A<span>ATLAS<small>PERSONAL OPERATING SPACE</small></span></a>
+<nav aria-label="Hoofdmenu">
+<button class="active" data-view="home">⌂ Overzicht</button><button data-view="school">▤ School</button>
+<button data-view="agenda">◷ Agenda</button><button data-view="memory">◇ Geheugen</button>
+<button data-view="kitchen">♧ Keuken</button><button data-view="assistant">✦ Assistent</button>
+<button data-view="system">⚙ Systeem</button></nav><div class="local">● Lokaal op jouw apparaat<small>ATLAS OS · 0.1</small></div></aside>
+<main><header><div><span class="eyebrow" id="date">JOUW DAG, IN BEELD</span><h1 id="heading">Overzicht</h1></div>
+<div class="header-right"><span id="clock"></span><button id="fullscreen" aria-label="Volledig scherm">⛶</button></div></header>
+<div id="notice" role="status" aria-live="polite" hidden></div>
+<section id="home" class="view">
+<div class="hero"><div><span class="eyebrow">RUIMTE OM VOORUIT TE KIJKEN</span><h2>Wat staat er op de planning?</h2><p>School, dagelijkse afspraken en ideeën. Alles op één plek.</p><button data-goto="assistant">✦ Vraag ATLAS om hulp</button></div><div class="orb" aria-hidden="true">A</div></div>
+<div id="metrics" class="metrics"></div><div class="columns"><article><h2>Volgende deadlines</h2><div id="upcoming"></div></article><article><h2>Vandaag</h2><div id="today"></div></article></div>
+</section>
+<section id="school" class="view" hidden><div class="columns"><article><h2 id="task-form-title">Nieuwe schooltaak</h2>
+<form id="task-form"><input name="id" type="hidden"><label>Titel<input name="title" required maxlength="200" placeholder="Bijvoorbeeld: verslag afmaken"></label>
+<div class="pair"><label>Vak<input name="subject" required value="Algemeen" maxlength="200"></label><label>Type<select name="kind"><option value="taak">Taak</option><option value="toets">Toets</option><option value="deadline">Deadline</option></select></label></div>
+<label>Deadline<input name="due" type="datetime-local" required></label><label>Benodigde studietijd (minuten)<input name="minutes" type="number" min="1" max="3000" value="45" required></label>
+<div class="buttons"><button type="submit">Taak opslaan</button><button type="button" class="secondary" id="task-reset">Nieuw formulier</button></div></form></article>
+<article><h2>Taken, toetsen en deadlines</h2><div id="task-list"></div></article></div></section>
+<section id="agenda" class="view" hidden><div class="columns"><article><h2>Afspraak toevoegen</h2><form id="event-form">
+<label>Titel<input name="title" required maxlength="200"></label><label>Begin<input name="start" type="datetime-local" required></label><label>Einde<input name="end" type="datetime-local" required></label><button type="submit">Afspraak opslaan</button></form>
+<hr><h2>Studieplanning</h2><p>ATLAS plant open taken in je vrije studietijd, voor hun deadline. Stel je studie-uren in bij Systeem.</p><button id="plan">Plan de komende 7 dagen</button><div id="plan-result"></div></article>
+<article><h2>Agenda</h2><div id="event-list"></div></article></div></section>
+<section id="memory" class="view" hidden><div class="columns"><article><h2>Bewaar een idee</h2><form id="note-form"><label>Titel<input name="title" required maxlength="200"></label><label>Notitie<textarea name="body" required rows="7"></textarea></label><button type="submit">Notitie bewaren</button></form>
+<hr><h2>Document bewaren</h2><p>Importeer een tekstbestand of Markdown-document. Je documenten blijven lokaal.</p><form id="document-form"><label>Bestand (.txt of .md, maximaal 1 MB)<input type="file" name="file" accept=".txt,.md" required></label><button type="submit">Document importeren</button></form></article>
+<article><h2>Persoonlijk geheugen</h2><label>Zoeken<input id="memory-search" type="search" placeholder="Zoek in titels en inhoud"></label><div id="note-list"></div></article></div></section>
+<section id="kitchen" class="view" hidden><div class="columns"><article><h2>Recept toevoegen</h2><form id="recipe-form"><label>Naam<input name="title" required maxlength="200"></label><label>Basisporties<input name="portions" type="number" min="0.1" max="1000" step="0.1" value="4" required></label><label>Ingrediënten<textarea name="ingredients" rows="6" required placeholder="Tarwebloem; 250; g&#10;Melk; 200; ml&#10;Ei; 2; stuks"></textarea><small>Per regel: naam; hoeveelheid; g, ml of stuks</small></label><label>Bereiding<textarea name="method" rows="4" required></textarea></label><button type="submit">Recept opslaan</button></form></article>
+<article><h2>Recepten omrekenen</h2><label>Recept<select id="recipe-select"></select></label><label>Gewenste porties<input id="recipe-portions" type="number" min="0.1" max="1000" step="0.1" value="4"></label><button id="scale">Hoeveelheden berekenen</button><div id="scaled"></div></article></div></section>
+<section id="assistant" class="view" hidden><div class="columns"><article><h2>Jouw ATLAS-assistent</h2><p>Laat ATLAS een taak onthouden, een notitie bewaren of je week plannen.</p>
+<form id="ai-form"><label>Model<select name="model" id="model-select" required><option value="">Log eerst in met ChatGPT</option></select></label><label>Wat kan ATLAS doen?<textarea name="message" required maxlength="10000" rows="6" placeholder="Plan mijn schoolwerk voor de komende week."></textarea></label><label class="check"><input type="checkbox" name="include_memory"> Deel ook mijn laatste 10 notities met ChatGPT</label><p class="hint">Je bericht, open taken en komende afspraken worden voor dit verzoek met OpenAI gedeeld.</p><button type="submit" id="ai-send">Verstuur naar ATLAS</button></form><div id="ai-answer" aria-live="polite"></div></article>
+<article><h2>ChatGPT-account</h2><p>Gebruik je bestaande ChatGPT-abonnement. Beschikbaarheid en abonnementslimieten gelden.</p><div id="account-list"></div><div class="buttons"><button id="login">Continue with ChatGPT</button><button id="models" class="secondary">Modellen vernieuwen</button><button id="logout" class="secondary">Uitloggen</button></div><a class="text-link" href="https://chatgpt.com/#settings/Usage" target="_blank" rel="noopener noreferrer">Beheer gebruik in ChatGPT ↗</a><hr><h2>Acties</h2><p id="action-mode"></p><div id="action-list"></div></article></div></section>
+<section id="system" class="view" hidden><div class="columns"><article><h2>Jouw apparaat</h2><div id="system-status"></div><p>ATLAS kan taken en notities toevoegen en studieblokken plannen. Systeemcommando's, bestanden verwijderen en herstarten zijn nog niet beschikbaar.</p><a class="button" href="/api/export" download>Download gegevensbackup</a></article>
+<article><h2>Instellingen</h2><form id="settings-form"><label class="check"><input name="automatic" type="checkbox"> Laat AI taken en notities direct bewaren en studieblokken plannen</label><p class="hint">Uitgeschakeld: je keurt elke AI-actie eerst goed. Alle acties verschijnen in het logboek.</p><div class="pair"><label>Studie vanaf (uur)<input name="study_start" type="number" min="0" max="22" required></label><label>Studie tot (uur)<input name="study_end" type="number" min="1" max="23" required></label></div><button type="submit">Instellingen bewaren</button></form><hr><h2>Over deze versie</h2><p>Lokale basis voor Raspberry Pi 5, met SQLite en automatische opstart. Agenda-koppelingen, spraak en volledige keukenwerkplanning volgen later.</p></article></div></section>
+<footer>ATLAS · jouw persoonlijke werkruimte</footer></main></body></html>
